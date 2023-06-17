@@ -11,7 +11,8 @@ def run():
     APITOKEN = os.getenv('APITOKEN', None)
     if APITOKEN is None: raise EnvironmentError(f'env variable APITOKEN not found')
 
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(name)s %(levelname)s] %(message)s')
+    logging.getLogger('httpx').setLevel(logging.WARNING)
 
     parser = create_parser([
         Command('/add' , add_item.help  , add_item.configure_parser  , add_item.handler),
