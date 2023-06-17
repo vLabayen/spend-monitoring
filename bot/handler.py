@@ -8,8 +8,7 @@ from telegram.ext import ContextTypes
 from telegram.ext._handler import BaseHandler
 from telegram.ext._utils.types import CCT
 
-from bot.cmdparser import ParserHelp, ParserError, CmdParser
-from bot.callbacks import help, error
+from bot.cmdparser import CmdParser
 
 logger = logging.getLogger(__name__)
 
@@ -30,8 +29,6 @@ class CommandHandler(BaseHandler[Update, CCT]):
         logger.info(f'Received message: {update.effective_message.text!r}')
 
         try: return self.parser.parse_args(update.effective_message.text)
-        except ParserHelp as e: return Namespace(handler=help, **e.kwargs)
-        except ParserError as e: return Namespace(handler=error, **e.kwargs)
         except:
             logger.error('\n'.join(traceback.format_exc().splitlines()))
             return False

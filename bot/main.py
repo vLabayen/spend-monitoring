@@ -1,38 +1,24 @@
 import os
 import logging
-import argparse
 
 from telegram.ext import ApplicationBuilder
 from bot.handler import CommandHandler
-from bot.cmdparser import CmdParser
-from bot.callbacks import (
-    help,
-    add,
-)
-
-def create_parser():
-    parser = CmdParser(add_help=False, usage=argparse.SUPPRESS)
-    subparsers = parser.add_subparsers(dest='command')
-    subparsers.required = True
-
-    add_parser = subparsers.add_parser('/add', help='Add an item to the store', usage=argparse.SUPPRESS)
-    add_parser.set_defaults(handler=add)
-    add_parser.add_argument('item', type=str, help='%(type)s: Name of the item')
-    add_parser.add_argument('cost', type=float, help='%(type)s: Cost of the item in €')
-
-    help_parser = subparsers.add_parser('/help', help='Show this help message', usage=argparse.SUPPRESS)
-    help_parser.set_defaults(handler=help, message=parser.format_help())
-
-    return parser
+from bot.cmdparser import create_parser
+from bot.commands import Command, list_items, add_item
 
 def run():
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
-
     APITOKEN = os.getenv('APITOKEN', None)
     if APITOKEN is None: raise EnvironmentError(f'env variable APITOKEN not found')
 
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+
+    parser = create_parser([
+        Command('/add' , add_item.help  , add_item.configure_parser  , add_item.handler),
+        Command('/list', list_items.help, list_items.configure_parser, list_items.handler),
+    ])
+
     application = ApplicationBuilder().token(APITOKEN).build()
-    application.add_handler(CommandHandler(create_parser()))
+    application.add_handler(CommandHandler(parser))
     application.run_polling()
 
 
