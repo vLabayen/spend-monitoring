@@ -1,3 +1,6 @@
 **/__pycache__
 
 secrets.env
+
+elastic/elastic.data
+elastic/elastic.logs

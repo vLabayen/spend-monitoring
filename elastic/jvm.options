@@ -1,0 +1,9 @@
+
+-Xms2g
+-Xmx2g
+
+# Patch for log4j CVE-2021-44228: RCE
+-Dlog4j2.formatMsgNoLookups=true
+
+# Allow elastic to run as root
+-Des.insecure.allow.root=true

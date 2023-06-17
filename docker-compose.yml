@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  telegram-bot:
+    container_name: telegram-bot
+    build:
+      context: telegram-bot
+      dockerfile: Dockerfile
+      args:
+        APITOKEN: ${APITOKEN}
+        EXTRA_INDEX_URL: ${EXTRA_INDEX_URL}
+
+    links:
+      - elastic
+
+  elastic:
+    container_name: elastic
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.0
+    volumes:
+      - ./elastic/elastic.data:/var/lib/elasticsearch
+      - ./elastic/elastic.logs:/var/log/elasticsearch
+      - ./elastic/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./elastic/jvm.options:/usr/share/elasticsearch/config/jvm.options.d/jvm.options:ro
+    ports:
+      - 127.0.0.1:9200:9200
