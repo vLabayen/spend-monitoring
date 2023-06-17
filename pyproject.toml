@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm[toml]"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bot"
+authors = [
+    { name = "Victor Labayen", email = "victor.mendi3216@gmail.com" },
+]
+description = "Telegram bot"
+license = { text = "MIT" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+requires-python = ">=3.8"
+dependencies = [
+    'argparse',
+    'telegram',
+    'python-telegram-bot',
+]
+dynamic = ["version"]
+
+[project.urls]
+"Homepage" = "https://github.com/vLabayen/spend-monitoring"
+
+[project.scripts]
+run-bot = "bot.main:run"
