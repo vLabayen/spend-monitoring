@@ -1,4 +1,5 @@
 FROM ubuntu:jammy
+ARG APITOKEN
 
 RUN apt-get update -y
 RUN apt-get install -y python3.10 python3-venv
@@ -11,4 +12,5 @@ COPY bot/ bot
 
 RUN bash -c 'source venv/bin/activate && pip install .'
 
+ENV APITOKEN=${APITOKEN}
 CMD venv/bin/run-bot

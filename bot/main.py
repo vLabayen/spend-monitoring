@@ -2,6 +2,7 @@ import os
 import logging
 
 from telegram.ext import ApplicationBuilder
+from telegram.error import InvalidToken
 from bot.handler import CommandHandler
 from bot.cmdparser import create_parser
 from bot.commands import Command, list_items, add_item
@@ -17,9 +18,13 @@ def run():
         Command('/list', list_items.help, list_items.configure_parser, list_items.handler),
     ])
 
-    application = ApplicationBuilder().token(APITOKEN).build()
-    application.add_handler(CommandHandler(parser))
-    application.run_polling()
+    try:
+        application = ApplicationBuilder().token(APITOKEN).build()
+        application.add_handler(CommandHandler(parser))
+        application.run_polling()
+
+    except InvalidToken as e:
+        raise EnvironmentError(f'Invalid token: {APITOKEN!r}')
 
 
 if __name__ == '__main__': run()
