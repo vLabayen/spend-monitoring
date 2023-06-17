@@ -21,5 +21,5 @@ services:
       - ./elastic/elastic.logs:/var/log/elasticsearch
       - ./elastic/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
       - ./elastic/jvm.options:/usr/share/elasticsearch/config/jvm.options.d/jvm.options:ro
-    ports:
-      - 127.0.0.1:9200:9200
+    # ports:
+    #   - 127.0.0.1:9200:9200
