@@ -12,12 +12,12 @@ from ndt.es7.utils import ensure_index_and_mapping
 
 from bot.utils.cmd_types import date
 from bot.domain.item import Item
-from bot.config.elastic import items_index_pattern, items_index, host as es_host
+from bot.config.elastic import items_index, host as es_host
 
 help = 'Add an item to the store'
 
 def init() -> bool:
-    ensure_index_and_mapping(items_index_pattern, Item.mapping(), host=es_host)
+    ensure_index_and_mapping(items_index, Item.mapping(), host=es_host)
     return True
 
 def configure_parser(parser: ArgumentParser) -> None:
@@ -31,7 +31,7 @@ async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE, name: str,
     ''' Callback for the /add command. Add an item to the bbdd '''
     item = Item(name, cost, date, category=category, establishment=establishment)
 
-    try: index_document(items_index(), item.to_dict(), host=es_host)
+    try: index_document(items_index, item.to_dict(), host=es_host)
     except QueryError as e:
         logging.error(f'Error indexing {item}: {json.dumps(str(e), indent=2)}')
         await context.bot.send_message(
