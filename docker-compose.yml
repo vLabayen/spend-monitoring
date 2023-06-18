@@ -10,6 +10,9 @@ services:
         APITOKEN: ${APITOKEN}
         EXTRA_INDEX_URL: ${EXTRA_INDEX_URL}
 
+    depends_on:
+      elastic:
+        condition: service_healthy
     links:
       - elastic
 
@@ -23,3 +26,7 @@ services:
       - ./elastic/jvm.options:/usr/share/elasticsearch/config/jvm.options.d/jvm.options:ro
     # ports:
     #   - 127.0.0.1:9200:9200
+
+    healthcheck:
+      test: curl localhost:9200/
+      interval: 10s
