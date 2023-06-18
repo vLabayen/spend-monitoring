@@ -10,6 +10,7 @@ from ndt.es7.core import scroll, fetch_hits
 from bot.utils.cmd_types import date
 from bot.utils.elastic_q import filter_q, range_q
 from bot.domain.item import Item
+from bot.config.elastic import items_index_pattern, host as es_host
 
 help = 'List all the items in the bbdd'
 
@@ -26,7 +27,7 @@ async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE, gte: dt, l
     }
     parse_hit = lambda hit: Item.from_dict(hit['_source'])
 
-    try: items = [item for r in scroll('items*', q, host='elastic') for item in fetch_hits(r, parse_hit)]
+    try: items = [item for r in scroll(items_index_pattern, q, host=es_host) for item in fetch_hits(r, parse_hit)]
     except Exception as e:
          logging.error(f'Unexpected error: {str(e)}')
          logging.error('\n'.join(traceback.format_exc().splitlines()))

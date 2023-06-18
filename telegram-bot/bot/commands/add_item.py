@@ -11,6 +11,7 @@ from ndt.es7.core import index_document, QueryError
 
 from bot.utils.cmd_types import date
 from bot.domain.item import Item
+from bot.config.elastic import items_index_pattern, items_index, host as es_host
 
 help = 'Add an item to the store'
 
@@ -27,7 +28,7 @@ async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE, name: str,
     '''
     item = Item(name, cost, date, category=category, establishment=establishment)
 
-    try: index_document(f'items+{dt.now().year}', item.to_dict(), host='elastic')
+    try: index_document(items_index(), item.to_dict(), host=es_host)
     except QueryError as e:
         logging.error(f'Error indexing {item}: {json.dumps(str(e), indent=2)}')
         await context.bot.send_message(

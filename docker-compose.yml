@@ -9,6 +9,7 @@ services:
       args:
         APITOKEN: ${APITOKEN}
         EXTRA_INDEX_URL: ${EXTRA_INDEX_URL}
+        ES_HOST: elastic
 
     depends_on:
       elastic:
