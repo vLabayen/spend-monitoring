@@ -1,30 +1,42 @@
+from typing import Union
 import logging
-import re
+import json
 from datetime import datetime as dt
-from ndt.time_handler import rtime2datetime
-
 from argparse import ArgumentParser
+
 from telegram import Update
 from telegram.ext import ContextTypes
+from ndt.es7.core import index_document, QueryError
+
+from bot.utils.cmd_types import date
+
 
 help = 'Add an item to the store'
 
-date_rgx = re.compile(r'\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}')
-def date(date: str) -> dt:
-    if date_rgx.match(date): return dt.strptime(date, '%Y-%m-%d-%H-%M-%S')
-    return rtime2datetime(date)
-
 def configure_parser(parser: ArgumentParser) -> None:
-	parser.add_argument('item', type=str, help='%(type)s: Name of the item')
+	parser.add_argument('name', type=str, help='%(type)s: Name of the item')
 	parser.add_argument('cost', type=float, help='%(type)s: Cost of the item in €')
-	parser.add_argument('-d', '--date', type=date, help='%(type)s: Cost of the item in €', default=dt.now())
+	parser.add_argument('-d', '--date'         , type=date, metavar='date'         , help='%(type)s: Date of the spent'         , default=dt.now())
+	parser.add_argument('-c', '--category'     , type=str , metavar='category'     , help='%(type)s: Category of the item'      , default=None)
+	parser.add_argument('-e', '--establishment', type=str , metavar='establishment', help='%(type)s: Establishment of the spent', default=None)
 
-async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE, item: str, cost: float, date: dt) -> None:
+async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE, name: str, cost: float, date: dt, category: Union[str, None], establishment: Union[str, None]) -> None:
     ''' Callback for the /add command.
     Add an item to the bbdd
     '''
-    logging.info(f'Adding {item!r} with cost {cost} at time {date}')
+    item = {'name': name, 'cost': cost, 'date': int(date.timestamp())}
+    if category is not None: item['category'] = category
+    if establishment is not None: item['establishment'] = establishment
+
+    try: index_document(f'items+{dt.now().year}', item, host='elastic')
+    except QueryError as e:
+        logging.error(f'Error indexing item {item!r}: {json.dumps(str(e), indent=2)}')
+        await context.bot.send_message(
+             chat_id = update.effective_chat.id,
+             text = json.dumps(str(e), indent=2)
+        )
+
     await context.bot.send_message(
         chat_id = update.effective_chat.id,
-        text = 'Added!'
+        text = f'Added {json.dumps(item, indent=2)}'
     )
