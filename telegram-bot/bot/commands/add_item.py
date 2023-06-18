@@ -8,12 +8,17 @@ from argparse import ArgumentParser
 from telegram import Update
 from telegram.ext import ContextTypes
 from ndt.es7.core import index_document, QueryError
+from ndt.es7.utils import ensure_index_and_mapping
 
 from bot.utils.cmd_types import date
 from bot.domain.item import Item
 from bot.config.elastic import items_index_pattern, items_index, host as es_host
 
 help = 'Add an item to the store'
+
+def init() -> bool:
+    ensure_index_and_mapping(items_index_pattern, Item.mapping(), host=es_host)
+    return True
 
 def configure_parser(parser: ArgumentParser) -> None:
 	parser.add_argument('name', type=str  , help='%(type)s: Name of the item')
