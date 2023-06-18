@@ -33,7 +33,7 @@ async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE, name: str,
         logging.error(f'Error indexing item {item!r}: {json.dumps(str(e), indent=2)}')
         await context.bot.send_message(
              chat_id = update.effective_chat.id,
-             text = json.dumps(str(e), indent=2)
+             text = f'Error adding item: {json.dumps(str(e), indent=2)}'
         )
 
     await context.bot.send_message(
