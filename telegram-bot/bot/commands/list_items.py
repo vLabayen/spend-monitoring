@@ -8,7 +8,7 @@ from telegram.ext import ContextTypes
 from ndt.es7.core import scroll, fetch_hits
 
 from bot.utils.cmd_types import date
-from bot.utils.elastic_q import range_q
+from bot.utils.elastic_q import filter_q, range_q
 from bot.domain.item import Item
 
 help = 'List all the items in the bbdd'
@@ -19,9 +19,9 @@ def configure_parser(parser: ArgumentParser) -> None:
 
 async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE, gte: dt, lte: dt) -> None:
     q = {
-        'query': {'bool': {'filter': [
+        'query': {'bool': filter_q(
             range_q(gte, lte),
-        ]}},
+        )},
         'sort': [{'date': 'asc'}]
     }
     parse_hit = lambda hit: Item.from_dict(hit['_source'])
