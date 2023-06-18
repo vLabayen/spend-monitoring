@@ -23,7 +23,7 @@ async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE, gte: dt, l
         'query': {'bool': filter_q(
             range_q(gte, lte),
         )},
-        'sort': [{'date': 'asc'}]
+        'sort': [{Item.datefield(): 'asc'}]
     }
     parse_hit = lambda hit: Item.from_dict(hit['_source'])
 

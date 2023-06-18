@@ -29,6 +29,9 @@ class Item(DataClassJsonMixin):
 		'@timestamp': es_date_s
 	}
 
+	@staticmethod
+	def datefield(): return 'date'
+
 	def str_for_list(self) -> str:
 		opt_fields = [v for v in {self.category, self.establishment} if v is not None]
 		template_fields = {
