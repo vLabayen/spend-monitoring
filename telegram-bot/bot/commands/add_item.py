@@ -14,11 +14,11 @@ from bot.utils.cmd_types import date
 help = 'Add an item to the store'
 
 def configure_parser(parser: ArgumentParser) -> None:
-	parser.add_argument('name', type=str, help='%(type)s: Name of the item')
+	parser.add_argument('name', type=str  , help='%(type)s: Name of the item')
 	parser.add_argument('cost', type=float, help='%(type)s: Cost of the item in €')
-	parser.add_argument('-d', '--date'         , type=date, metavar='date'         , help='%(type)s: Date of the spent'         , default=dt.now())
-	parser.add_argument('-c', '--category'     , type=str , metavar='category'     , help='%(type)s: Category of the item'      , default=None)
-	parser.add_argument('-e', '--establishment', type=str , metavar='establishment', help='%(type)s: Establishment of the spent', default=None)
+	parser.add_argument('-d', '--date'         , type=date, metavar='date'         , help='%(type)s: Purchase date'         , default=dt.now())
+	parser.add_argument('-c', '--category'     , type=str , metavar='category'     , help='%(type)s: Category of the item'  , default=None)
+	parser.add_argument('-e', '--establishment', type=str , metavar='establishment', help='%(type)s: Purchase establishment', default=None)
 
 async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE, name: str, cost: float, date: dt, category: Union[str, None], establishment: Union[str, None]) -> None:
     ''' Callback for the /add command.
