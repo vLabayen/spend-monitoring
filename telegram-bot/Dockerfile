@@ -9,9 +9,10 @@ WORKDIR ~/
 RUN python3 -m venv venv
 
 COPY pyproject.toml pyproject.toml
-COPY bot/ bot
+RUN mkdir bot
+RUN bash -c "source venv/bin/activate && pip config set global.extra-index-url ${EXTRA_INDEX_URL} && pip install -e ."
 
-RUN bash -c "source venv/bin/activate && pip config set global.extra-index-url ${EXTRA_INDEX_URL} && pip install ."
+COPY bot/ bot
 
 ENV APITOKEN=${APITOKEN}
 CMD venv/bin/run-bot
