@@ -28,9 +28,7 @@ def configure_parser(parser: ArgumentParser) -> None:
 	parser.add_argument('-e', '--establishment', type=str , metavar='establishment', help='%(type)s: Purchase establishment', default=None)
 
 async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE, name: str, cost: float, date: dt, category: Union[str, None], establishment: Union[str, None]) -> None:
-    ''' Callback for the /add command.
-    Add an item to the bbdd
-    '''
+    ''' Callback for the /add command. Add an item to the bbdd '''
     item = Item(name, cost, date, category=category, establishment=establishment)
 
     try: index_document(items_index(), item.to_dict(), host=es_host)
