@@ -15,8 +15,8 @@ def run():
     logging.getLogger('httpx').setLevel(logging.WARNING)
 
     parser = create_parser([
-        Command('/add' , add_item.help  , add_item.configure_parser  , add_item.handler),
-        Command('/list', list_items.help, list_items.configure_parser, list_items.handler),
+        Command.from_module('/add' , add_item),
+        Command.from_module('/list', list_items),
     ])
 
     try:

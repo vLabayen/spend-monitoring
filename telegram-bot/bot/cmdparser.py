@@ -63,6 +63,10 @@ def create_parser(commands: List[Command]):
     subparsers.required = True
 
     for cmd in commands:
+        if not cmd.init():
+            logging.warning(f'{cmd} failed to intialize. Skipping binding')
+            continue
+
         subparser = subparsers.add_parser(cmd.name, help=cmd.help, usage=argparse.SUPPRESS)
         subparser.set_defaults(handler=cmd.handler)
         cmd.configure_parser(subparser)
