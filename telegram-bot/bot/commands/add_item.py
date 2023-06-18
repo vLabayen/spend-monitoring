@@ -24,7 +24,7 @@ async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE, name: str,
     ''' Callback for the /add command.
     Add an item to the bbdd
     '''
-    item = {'name': name, 'cost': cost, 'date': int(date.timestamp())}
+    item = {'name': name, 'cost': cost, 'date': int(date.timestamp()), '@timestamp': int(dt.now().timestamp())}
     if category is not None: item['category'] = category
     if establishment is not None: item['establishment'] = establishment
 
