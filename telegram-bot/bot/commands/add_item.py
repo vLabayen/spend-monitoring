@@ -1,5 +1,6 @@
 from typing import Union
 import logging
+import traceback
 import json
 from datetime import datetime as dt
 from argparse import ArgumentParser
@@ -33,6 +34,16 @@ async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE, name: str,
              chat_id = update.effective_chat.id,
              text = f'Error adding item: {json.dumps(str(e), indent=2)}'
         )
+        return
+
+    except Exception as e:
+         logging.error(f'Unexpected error: {str(e)}')
+         logging.error('\n'.join(traceback.format_exc().splitlines()))
+         await context.bot.send_message(
+              chat_id = update.effective_chat.id,
+              text = f'Unexpected error: {str(e)}'
+         )
+         return
 
     await context.bot.send_message(
         chat_id = update.effective_chat.id,

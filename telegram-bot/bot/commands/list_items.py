@@ -1,4 +1,5 @@
 import logging
+import traceback
 from datetime import datetime as dt
 from argparse import ArgumentParser
 
@@ -24,7 +25,16 @@ async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE, gte: dt, l
         'sort': [{'date': 'asc'}]
     }
     parse_hit = lambda hit: Item.from_dict(hit['_source'])
-    items = [item for r in scroll('items*', q, host='elastic') for item in fetch_hits(r, parse_hit)]
+
+    try: items = [item for r in scroll('items*', q, host='elastic') for item in fetch_hits(r, parse_hit)]
+    except Exception as e:
+         logging.error(f'Unexpected error: {str(e)}')
+         logging.error('\n'.join(traceback.format_exc().splitlines()))
+         await context.bot.send_message(
+              chat_id = update.effective_chat.id,
+              text = f'Unexpected error: {str(e)}'
+         )
+         return
 
     await context.bot.send_message(
         chat_id = update._effective_chat.id,
