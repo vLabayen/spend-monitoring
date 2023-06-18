@@ -1,5 +1,6 @@
 from typing import List
 import logging
+import traceback
 import argparse
 import shlex
 
@@ -63,8 +64,14 @@ def create_parser(commands: List[Command]):
     subparsers.required = True
 
     for cmd in commands:
-        if not cmd.init():
-            logging.warning(f'{cmd} failed to intialize. Skipping binding')
+        try:
+            if not cmd.init():
+                logging.warning(f'{cmd} failed to intialize. Skipping binding')
+                continue
+
+        except Exception as e:
+            logging.error(f'Error while initializing {cmd}. Skipping binding')
+            logging.error('\n'.join(traceback.format_exc().splitlines()))
             continue
 
         subparser = subparsers.add_parser(cmd.name, help=cmd.help, usage=argparse.SUPPRESS)
