@@ -4,10 +4,11 @@ from argparse import ArgumentParser
 
 from telegram import Update
 from telegram.ext import ContextTypes
-from ndt.es7.core import scroll
+from ndt.es7.core import scroll, fetch_hits
 
 from bot.utils.cmd_types import date
 from bot.utils.elastic_q import range_q
+from bot.domain.item import Item
 
 help = 'List all the items in the bbdd'
 
@@ -22,13 +23,10 @@ async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE, gte: dt, l
         ]}},
         'sort': [{'date': 'asc'}]
     }
-    items = [hit['_source'] for r in scroll('items*', q, host='elastic') for hit in r['hits']['hits']]
+    parse_hit = lambda hit: Item.from_dict(hit['_source'])
+    items = [item for r in scroll('items*', q, host='elastic') for item in fetch_hits(r, parse_hit)]
 
     await context.bot.send_message(
         chat_id = update._effective_chat.id,
-        text = '\n'.join('{date}: {name} - {cost}€'.format(
-            date = dt.fromtimestamp(item['date']).strftime('%Y-%m-%d'),
-            name = item['name'],
-            cost = item['cost']
-        ) for item in items)
+        text = '\n'.join(item.str_for_list() for item in items)
 	)

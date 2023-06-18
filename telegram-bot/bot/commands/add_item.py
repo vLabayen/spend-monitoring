@@ -9,7 +9,7 @@ from telegram.ext import ContextTypes
 from ndt.es7.core import index_document, QueryError
 
 from bot.utils.cmd_types import date
-
+from bot.domain.item import Item
 
 help = 'Add an item to the store'
 
@@ -24,13 +24,11 @@ async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE, name: str,
     ''' Callback for the /add command.
     Add an item to the bbdd
     '''
-    item = {'name': name, 'cost': cost, 'date': int(date.timestamp()), '@timestamp': int(dt.now().timestamp())}
-    if category is not None: item['category'] = category
-    if establishment is not None: item['establishment'] = establishment
+    item = Item(name, cost, date, category=category, establishment=establishment)
 
-    try: index_document(f'items+{dt.now().year}', item, host='elastic')
+    try: index_document(f'items+{dt.now().year}', item.to_dict(), host='elastic')
     except QueryError as e:
-        logging.error(f'Error indexing item {item!r}: {json.dumps(str(e), indent=2)}')
+        logging.error(f'Error indexing {item}: {json.dumps(str(e), indent=2)}')
         await context.bot.send_message(
              chat_id = update.effective_chat.id,
              text = f'Error adding item: {json.dumps(str(e), indent=2)}'
@@ -38,5 +36,5 @@ async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE, name: str,
 
     await context.bot.send_message(
         chat_id = update.effective_chat.id,
-        text = f'Added {json.dumps(item, indent=2)}'
+        text = f'Added {item.to_json(indent=2)}'
     )

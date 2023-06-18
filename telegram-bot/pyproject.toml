@@ -19,6 +19,7 @@ dependencies = [
     'argparse',
     'telegram',
     'python-telegram-bot',
+    'dataclasses-json',
     'ndt'
 ]
 dynamic = ["version"]
