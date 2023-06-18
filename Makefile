@@ -3,7 +3,7 @@ build:
 	docker-compose --env-file secrets.env build
 
 run:
-	docker-compose -env-file secrets.env up
+	docker-compose up --no-build
 
 stop:
 	docker-compose down
