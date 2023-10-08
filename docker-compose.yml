@@ -1,6 +1,35 @@
 version: "3"
 
 services:
+  elastic:
+    container_name: elastic
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.1
+    volumes:
+      - ./elastic/elastic.data:/var/lib/elasticsearch
+      - ./elastic/elastic.logs:/var/log/elasticsearch
+      - ./elastic/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./elastic/jvm.options:/usr/share/elasticsearch/config/jvm.options.d/jvm.options:ro
+    ports:
+      - 127.0.0.1:9200:9200
+
+    healthcheck:
+      test: curl localhost:9200/
+      interval: 10s
+
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:8.8.1
+    ports:
+      - 127.0.0.1:5601:5601
+
+    depends_on:
+      elastic:
+        condition: service_healthy
+    links:
+      - elastic
+    environment:
+      ELASTICSEARCH_HOSTS: http://elastic:9200
+
   telegram-bot:
     container_name: telegram-bot
     build:
@@ -16,34 +45,3 @@ services:
         condition: service_healthy
     links:
       - elastic
-
-  kibana:
-    container_name: kibana
-    image: docker.elastic.co/kibana/kibana:8.8.1
-    environment:
-      ELASTICSEARCH_HOSTS: http://elastic:9200
-
-    depends_on:
-      elastic:
-        condition: service_healthy
-
-    links:
-      - elastic
-    ports:
-      - 127.0.0.1:5601:5601
-
-
-  elastic:
-    container_name: elastic
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.1
-    volumes:
-      - ./elastic/elastic.data:/var/lib/elasticsearch
-      - ./elastic/elastic.logs:/var/log/elasticsearch
-      - ./elastic/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
-      - ./elastic/jvm.options:/usr/share/elasticsearch/config/jvm.options.d/jvm.options:ro
-    ports:
-      - 127.0.0.1:9200:9200
-
-    healthcheck:
-      test: curl localhost:9200/
-      interval: 10s
