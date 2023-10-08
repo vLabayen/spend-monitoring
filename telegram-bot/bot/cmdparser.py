@@ -36,7 +36,7 @@ class ParserError(Exception):
 
 
 class CmdParser(argparse.ArgumentParser):
-    ignore_args = {'command', 'handler', 'parser', 'help'}
+    control_args = {'command', 'handler', 'parser', 'help'}
 
     # Override error & print_help to generate interruptions
     def error(self, message: str, *args, **kwargs):
@@ -48,16 +48,16 @@ class CmdParser(argparse.ArgumentParser):
     # Parse args for specific command or go directly to help & error handlers
     def parse_args(self, cmd: str) -> argparse.Namespace:
         try: return super().parse_args(shlex.split(cmd))
-        except ParserHelp as e: return argparse.Namespace(handler=help, **e.kwargs)
+        except ParserHelp  as e: return argparse.Namespace(handler=help , **e.kwargs)
         except ParserError as e: return argparse.Namespace(handler=error, **e.kwargs)
 
-    # Fetch all arguments for the command exluding global ones
+    # Fetch all arguments for the command exluding control ones
     @staticmethod
     def get_kwargs(args: argparse.Namespace) -> dict:
-        return {name: value for name, value in vars(args).items() if name not in CmdParser.ignore_args}
+        return {name: value for name, value in vars(args).items() if name not in CmdParser.control_args}
 
 
-# Create a parser for all the given commands & and a global help command
+# Create a parser for all the given commands & add a global help command
 def create_parser(commands: List[Command]):
     parser = CmdParser(add_help=False, usage=argparse.SUPPRESS)
     subparsers = parser.add_subparsers(dest='command')
