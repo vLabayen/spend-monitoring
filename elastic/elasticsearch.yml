@@ -1,12 +1,11 @@
 http.port: 9200
 network.host : 0.0.0.0
-transport.tcp.port: 9300
-
-node.data : true
-node.master: true
+transport.port: 9300
 node.name: es-node
 
 discovery.type: single-node
 
 path.data: /var/lib/elasticsearch
 path.logs: /var/log/elasticsearch
+
+xpack.security.enabled: false

@@ -19,14 +19,14 @@ services:
 
   elastic:
     container_name: elastic
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.1
     volumes:
       - ./elastic/elastic.data:/var/lib/elasticsearch
       - ./elastic/elastic.logs:/var/log/elasticsearch
       - ./elastic/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
       - ./elastic/jvm.options:/usr/share/elasticsearch/config/jvm.options.d/jvm.options:ro
-    # ports:
-    #   - 127.0.0.1:9200:9200
+    ports:
+      - 127.0.0.1:9200:9200
 
     healthcheck:
       test: curl localhost:9200/
